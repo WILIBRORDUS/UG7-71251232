@@ -31,7 +31,7 @@ def pinjam_buku(katalog, pinjaman, nama, kode):
 
     katalog[kode]["stok"] -= 1
     pinjaman.append({"nama": nama, "kode": kode})
-    return none
+    return None
 
 
 def kembalikan_buku(katalog, pinjaman, nama, kode):
@@ -39,18 +39,18 @@ def kembalikan_buku(katalog, pinjaman, nama, kode):
     if not nama:
         return "Nama peminjam wajib diisi!"
 
-    target = none
-    for p in peminjaman:
+    target = None
+    for p in pinjaman:
         if p["nama"] == nama and p["kode"] == kode:
             target = p
             break
 
-    if target is none:
+    if target is None:
         return "Data peminjaman tidak ditemukan!"
 
     pinjaman.remove(target)
     katalog[kode]["stok"] += 1
-    return none
+    return None
 
 
 def rekap_per_peminjam(pinjaman):
@@ -123,6 +123,21 @@ nama, kode, pinjam, kembali = form_buku()
 #    - kalau `pinjam`  -> panggil pinjam_buku(...)
 #    - kalau `kembali` -> panggil kembalikan_buku(...)
 #    keduanya: kalau ada pesan -> st.error(pesan), kalau tidak -> st.success("... berhasil ...")
+if pinjam:
+    pesan = pinjam_buku(katalog, pinjaman, nama, kode)
+    if pesan:
+        st.error(pesan)
+    else:
+        judul_buku = katalog[kode]["judul"]
+        st.success(f"{nama} berhasil meminjam {judul_buku} ✅")
+
+elif kembali:
+    pesan = kembalikan_buku(katalog, pinjaman, nama, kode)
+    if pesan:
+        st.error(pesan)
+    else:
+        judul_buku = katalog[kode]["judul"]
+        st.success(f"{nama} berhasil mengembalikan {judul_buku}")
 
 st.subheader("📦 Stok Buku")
 tampilkan_katalog(katalog)
