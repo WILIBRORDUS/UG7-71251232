@@ -19,17 +19,50 @@ def buat_katalog():
 # ===== Logika =====
 def pinjam_buku(katalog, pinjaman, nama, kode):
     # return pesan error (str) kalau gagal, atau None kalau berhasil
-    pass
+    if not nama:
+        return "Nama peminjam wajib diisi!"
+
+    for p in pinjaman:
+        if p["nama"] == nama and p["kode"] == kode:
+            return "Buku ini sudah kamu pinjam!"
+
+    if katalog[kode]["stok"] <= 0:
+        return "Stok buku habis!"
+
+    katalog[kode]["stok"] -= 1
+    pinjaman.append({"nama": nama, "kode": kode})
+    return none
 
 
 def kembalikan_buku(katalog, pinjaman, nama, kode):
     # return pesan error (str) kalau gagal, atau None kalau berhasil
-    pass
+    if not nama:
+        return "Nama peminjam wajib diisi!"
+
+    target = none
+    for p in peminjaman:
+        if p["nama"] == nama and p["kode"] == kode:
+            target = p
+            break
+
+    if target is none:
+        return "Data peminjaman tidak ditemukan!"
+
+    pinjaman.remove(target)
+    katalog[kode]["stok"] += 1
+    return none
 
 
 def rekap_per_peminjam(pinjaman):
     # return dictionary {nama: set kode buku yang sedang dipinjam}
-    pass
+    rekap = {}
+    for p in pinjaman:
+        nama = p["nama"]
+        kode = p["kode"]
+        if nama not in rekap:
+            rekap[nama] = set()
+        rekap[nama].add(kode)
+    return rekap
 
 
 # ===== Tampilan =====
@@ -44,7 +77,17 @@ def form_buku():
     # pinjam = kol1.button("📖 Pinjam")
     # kembali = kol2.button("↩️ Kembalikan")
     # return nama, kode, pinjam, kembali
-    pass
+    nama_input = st.text_input("nama peminjam")
+    nama = nama_input.strip()
+
+    opsi_buku = {f"{kode} - {data['judul']}": kode for kode, data in st.session_state["katalog"].items()}
+    pilihan_buku = st.selectbox("buku", list(opsi_buku.keys()))
+    kode = opsi_buku[pilihan_buku]
+
+    kol1, kol2 = st.columns(2)
+    pinjam = kol1.button("📖 Pinjam")
+    kembali = kol2.button("↩️ Kembalikan")
+    return nama, kode, pinjam, kembali
 
 def tampilkan_katalog(katalog):
     st.table(pd.DataFrame.from_dict(katalog, orient="index"))
